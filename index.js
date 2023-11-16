@@ -62,11 +62,12 @@ app.get("/products", async (req, res) => {
 app.get("/products", async (req, res) => {
   try {
     const products = await product.find();
+
     // const products = await product.find({ price: { $gt: 400 } });
 
     // multiple value
     // const products = await product.find({ price: { $in: [400,200,900] } });
-
+    // const products =await product.find()
     if (products) {
       res.status(200).send(products);
     } else {
