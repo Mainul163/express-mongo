@@ -59,6 +59,28 @@ app.get("/products", async (req, res) => {
   }
 });
 
+app.get("/products", async (req, res) => {
+  try {
+    const products = await product.find();
+    // const products = await product.find({ price: { $gt: 400 } });
+
+    // multiple value
+    // const products = await product.find({ price: { $in: [400,200,900] } });
+
+    if (products) {
+      res.status(200).send(products);
+    } else {
+      res.status(404).send({
+        message: "products not found",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
+    });
+  }
+});
+
 app.get("/products/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -83,25 +105,6 @@ app.get("/products/:id", async (req, res) => {
       message: error.message,
     });
   }
-});
-
-app.post("/products", async (req, res) => {
-  try {
-    const newProduct = new product({
-      title: req.body.title,
-      price: req.body.price,
-      description: req.body.description,
-    });
-
-    const productData = await newProduct.save();
-    res.status(201).send(productData);
-  } catch (error) {
-    res.status(500).send({
-      message: error.message,
-    });
-  }
-
-  res.send("hello");
 });
 
 app.listen(port, async () => {
