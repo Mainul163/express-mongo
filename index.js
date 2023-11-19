@@ -67,7 +67,12 @@ app.get("/products", async (req, res) => {
 
     // multiple value
     // const products = await product.find({ price: { $in: [400,200,900] } });
-    // const products =await product.find()
+
+    //and operator
+    // const products = await product.find({$and:[{ price: { $gt: 400 } }, { rating: { $gt: 300 } }]})
+
+    // const products =await product.find().countDocuments();[ koyta document ase ]
+    // const products =await product.find().sort({ price: 1});[ascending order =choto theke boro, -1 decending ]
     if (products) {
       res.status(200).send(products);
     } else {
@@ -99,6 +104,65 @@ app.get("/products/:id", async (req, res) => {
     } else {
       res.status(404).send({
         message: "products not found",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
+    });
+  }
+});
+
+// delete
+
+app.delete("/products/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const productDelete = await product.deleteOne({ _id: id }); //findByIdAndDelete({})
+    if (productDelete) {
+      res.status(200).send({
+        success: true,
+        message: "deleted single product",
+        data: productDelete,
+      });
+    } else {
+      res.status(404).send({
+        success: false,
+        message: "products not found",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
+    });
+  }
+});
+// update
+
+app.put("/products/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updateProduct = await product.updateOne(
+      //findByIdAndUpdate({})
+      { _id: id },
+      {
+        $set: {
+          price: req.body.price,
+        },
+      },
+      { new: true }
+    );
+
+    if (updateProduct) {
+      res.status(200).send({
+        success: true,
+        message: "updated single product",
+        data: updateProduct,
+      });
+    } else {
+      res.status(404).send({
+        success: false,
+        message: "products not updated with this id",
       });
     }
   } catch (error) {
