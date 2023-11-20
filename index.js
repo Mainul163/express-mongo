@@ -11,9 +11,12 @@ app.use(express.json());
 const productsSchema = new mongoose.Schema({
   title: {
     type: String,
+    required: [true, "product title is required"],
+  },
+  price: {
+    type: Number,
     required: true,
   },
-  price: Number,
   description: String,
   createAt: {
     type: Date,
@@ -42,6 +45,24 @@ app.get("/", (req, res) => {
   res.send("hello");
 });
 
+// post data
+
+app.post("/products", async (req, res) => {
+  try {
+    const newProduct = new product({
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+    });
+
+    const productData = await newProduct.save();
+    res.status(201).send(productData);
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
+    });
+  }
+});
 app.get("/products", async (req, res) => {
   try {
     const products = await product.find();
